@@ -1,14 +1,20 @@
 import time
+import os
+import chromedriver_autoinstaller  # Auto-install correct ChromeDriver
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
+# Ensure ChromeDriver is installed
+chromedriver_autoinstaller.install()
+
+# Chrome options
 chrome_options = Options()
-#chrome_options.add_argument("--headless")  # Run in headless mode
-chrome_options.add_argument("--disable-gpu")  # Disable GPU acceleration
-chrome_options.add_argument("--no-sandbox")  # Disable sandboxing
-chrome_options.add_argument("--disable-dev-shm-usage")  # Disable shared memory usage
-chrome_options.add_argument("--disable-blink-features=AutomationControlled")  # Disable automation detection
-chrome_options.add_argument("--disable-infobars")  # Hides automation warnings
+chrome_options.add_argument("--headless")  # Required for Termux
+chrome_options.add_argument("--disable-gpu")
+chrome_options.add_argument("--no-sandbox")
+chrome_options.add_argument("--disable-dev-shm-usage")
+chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+chrome_options.add_argument("--disable-infobars")
 
 # Mobile device emulation
 mobile_emulation = {
@@ -17,7 +23,7 @@ mobile_emulation = {
 }
 chrome_options.add_experimental_option("mobileEmulation", mobile_emulation)
 
-# Launch Chrome
+# Set ChromeDriver path if needed
 driver = webdriver.Chrome(options=chrome_options)
 
 # Open a website
