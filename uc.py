@@ -332,6 +332,7 @@ def create_accounts():
             if "checkpoint" in curre:
                 driver.quit()
                 return
+            """
             driver.execute_script("window.open('');")
             driver.switch_to.window(driver.window_handles[1])
             driver.get("https://tempmail.so/")
@@ -340,28 +341,34 @@ def create_accounts():
             span_text = span_element.text
             time.sleep(0.5)
             driver.switch_to.window(driver.window_handles[0])
-            driver.find_element(By.XPATH,'//input[@name and @type="text"]').send_keys(span_text)
+            """
+            email= input("enter email :")
+            driver.find_element(By.XPATH,'//input[@name and @type="text"]').send_keys(email)
             time.sleep(1)
             driver.find_element(By.XPATH,'//button[@type="submit" and @value="Add"]').click()
             cookies = {cookie['name']: cookie['value'] for cookie in driver.get_cookies()}
-            driver.switch_to.window(driver.window_handles[1])
+            confirmation_code= input("enter code :")
+            print(f"{uid}|{password}|{email}|{confirmation_code}")
+            """
+         #   driver.switch_to.window(driver.window_handles[1])
             try:
-                span_eement=driver.find_element(By.XPATH,'//div[@class="order-3 md:order-2 basis-full md:basis-3/12 shrink-0 font-bold truncate"]')
-                codeaas=  span_eement.text
-                match = re.search(r'FB-(\d+)', codeaas)
+         #       span_eement=driver.find_element(By.XPATH,'//div[@class="order-3 md:order-2 basis-full md:basis-3/12 shrink-0 font-bold truncate"]')
+         #       codeaas=  span_eement.text
+          #      match = re.search(r'FB-(\d+)', codeaas)
 
-                if match:
+             #   if match:
                     # Extract the digits part after 'FB-'
-                    confirmation_code = match.group(1)
+                 #   confirmation_code = match.group(1)
                     
               #      code = input("put code :")
               #      driver.switch_to.window(driver.window_handles[0])
                #     codebox= driver.find_element(By.XPATH,'//input[@type="number" and @maxlength="5"]').send_keys(code)
                #     confirm_button= driver.find_element(By.XPATH,'//a[contains(text(),"Confirm")]').click()
-                    print(f"{uid}|{password}|{span_text}|{confirmation_code}")
+                    print(f"{uid}|{password}|{email}|{confirmation_code}")
                 
             except:
                 print("error adding data")
+            """
         driver.quit()
     except:
 
