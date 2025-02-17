@@ -260,15 +260,17 @@ def generate_random_password():
     return password
 
 def create_accounts():
-
     options = webdriver.ChromeOptions()
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--headless=new")
     options.add_argument("--window-size=375,812")  # Set window size to a typical mobile screen
     options.add_argument("--user-agent=Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.81 Mobile Safari/537.36")
+    options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    options.add_experimental_option("useAutomationExtension", False)
 
     driver = webdriver.Chrome(options=options)
+
     try:
         firstname, lastname, dob, phone, password = generate_user_details()
         driver.get("https://m.facebook.com/reg/")
@@ -357,7 +359,6 @@ def create_accounts():
                     codebox= driver.find_element(By.XPATH,'//input[@type="number" and @maxlength="5"]').send_keys(code)
                     confirm_button= driver.find_element(By.XPATH,'//a[contains(text(),"Confirm")]').click()
                     print(f"{uid}|{password}|{span_text}")
-                    time.sleep(3333)
                 
             except:
                 print("error adding data")
