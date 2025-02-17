@@ -264,7 +264,7 @@ def create_accounts():
     options = webdriver.ChromeOptions()
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-    # options.add_argument("--headless=new")
+     options.add_argument("--headless=new")
     options.add_argument("--window-size=375,812")  # Set window size to a typical mobile screen
     options.add_argument("--user-agent=Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.81 Mobile Safari/537.36")
 
