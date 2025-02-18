@@ -26,4 +26,5 @@ def create_chrome_instance():
 browser=create_chrome_instance()
 browser.get("https://www.google.com")
 browser.save_screenshot("/sdcard/download/screenshot.png")
+print("done")
 browser.quit()
