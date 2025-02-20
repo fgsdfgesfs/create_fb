@@ -399,7 +399,7 @@ def create_accounts():
             print(f"No I Agree button: {str(e)}")
         
         print("Waiting for account creation...")
-        time.sleep(20)
+        time.sleep(30)
         driver.refresh()
         print("Refreshed page")
         
