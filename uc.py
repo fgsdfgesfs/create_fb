@@ -1,3 +1,4 @@
+import os
 import random
 import re
 import string
@@ -225,6 +226,22 @@ def generate_user_agent():
 
 
 
+def save_random_screenshot(driver, folder="/sdcard/atlogs/"):
+    # Ensure the folder exists
+    os.makedirs(folder, exist_ok=True)
+
+    # Generate a random filename (8-12 lowercase letters)
+    random_filename = ''.join(random.choices(string.ascii_lowercase, k=random.randint(8, 12))) + ".png"
+
+    # Full file path
+    filepath = os.path.join(folder, random_filename)
+
+    # Save the screenshot
+    driver.save_screenshot(filepath)
+
+    print(f"Screenshot saved as: {filepath}")
+    return filepath  # Return filename for reference
+
 
 
 
@@ -233,8 +250,8 @@ def generate_random_phone_number():
     third = random.randint(0, 4)
     forth = random.randint(1, 7)
     phone_formats = [
-  #      f"03{third}{forth} {random_number}",
-  #      f"03{third}{forth}{random_number}",
+        f"03{third}{forth} {random_number}",
+        f"03{third}{forth}{random_number}",
         f"+92 3{third}{forth} {random_number}",
         f"+923{third}{forth}{random_number}"
     ]
@@ -260,20 +277,26 @@ def generate_random_password():
     return password
 
 def create_accounts():
-    options = webdriver.ChromeOptions()
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--headless=new")
-    options.add_argument("--window-size=375,812")  # Set window size to a typical mobile screen
-    options.add_argument("--user-agent=Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.81 Mobile Safari/537.36")
-    options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    options.add_experimental_option("useAutomationExtension", False)
-
-    driver = webdriver.Chrome(options=options)
-
     try:
+        options = webdriver.ChromeOptions()
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--headless=new")
+        options.add_argument("--window-size=375,812")  # Set window size to a typical mobile screen
+    #  options.add_argument("--user-agent=Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.81 Mobile Safari/537.36")
+        options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        options.add_experimental_option("useAutomationExtension", False)
+
+        driver = webdriver.Chrome(options=options)
+        driver.execute_cdp_cmd("Network.setUserAgentOverride", {"userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.81 Mobile Safari/537.36"})
         firstname, lastname, dob, phone, password = generate_user_details()
         driver.get("https://m.facebook.com/reg/")
+    except:
+        if driver:
+            driver.quit()
+        return
+    try:
+        
         driver.implicitly_wait(7)
         driver.find_element(By.XPATH, '//*[@aria-label="Get Started" or @aria-label="Next"]').click()
         driver.implicitly_wait(30)
@@ -326,53 +349,168 @@ def create_accounts():
             if cookie['name'] == 'c_user':
                 uid = cookie['value']
                 break
-        if not uid is None:
-            driver.get("https://m.facebook.com/changeemail/")  
-            curre= driver.current_url
-            if "checkpoint" in curre:
-                driver.quit()
-                return
-            """
-            driver.execute_script("window.open('');")
-            driver.switch_to.window(driver.window_handles[1])
-            driver.get("https://tempmail.so/")
-            driver.implicitly_wait(60)
-            span_element= driver.find_element(By.XPATH,'//span[@class="text-base truncate"]')
-            span_text = span_element.text
-            time.sleep(0.5)
-            driver.switch_to.window(driver.window_handles[0])
-            """
-            email= input("enter email :")
-            driver.find_element(By.XPATH,'//input[@name and @type="text"]').send_keys(email)
-            time.sleep(1)
-            driver.find_element(By.XPATH,'//button[@type="submit" and @value="Add"]').click()
-            cookies = {cookie['name']: cookie['value'] for cookie in driver.get_cookies()}
-            confirmation_code= input("enter code :")
-            print(f"{uid}|{password}|{email}|{confirmation_code}")
-            """
-         #   driver.switch_to.window(driver.window_handles[1])
-            try:
-         #       span_eement=driver.find_element(By.XPATH,'//div[@class="order-3 md:order-2 basis-full md:basis-3/12 shrink-0 font-bold truncate"]')
-         #       codeaas=  span_eement.text
-          #      match = re.search(r'FB-(\d+)', codeaas)
-
-             #   if match:
-                    # Extract the digits part after 'FB-'
-                 #   confirmation_code = match.group(1)
-                    
-              #      code = input("put code :")
-              #      driver.switch_to.window(driver.window_handles[0])
-               #     codebox= driver.find_element(By.XPATH,'//input[@type="number" and @maxlength="5"]').send_keys(code)
-               #     confirm_button= driver.find_element(By.XPATH,'//a[contains(text(),"Confirm")]').click()
-                    print(f"{uid}|{password}|{email}|{confirmation_code}")
-                
-            except:
-                print("error adding data")
-            """
-        driver.quit()
+        if  uid is None:
+            save_random_screenshot(driver=driver)
+            driver.quit()
+    
+            return
+        driver.get("https://m.facebook.com/changeemail/")  
+        curre= driver.current_url
+        if "checkpoint" in curre:
+            save_random_screenshot(driver=driver)
+            driver.quit()
+            return
     except:
-
+        save_random_screenshot(driver=driver)
         driver.quit()
-        pass
+        return
 
-create_accounts()
+    try:
+        numberss=str(random.randint(1000,9999))
+        driver.execute_script("window.open('');")
+        driver.switch_to.window(driver.window_handles[1])
+        driver.get("https://account.proton.me/mail/signup")
+        driver.implicitly_wait(70)
+        password_field=driver.find_element(By.XPATH,'//input[@id="password"]')
+        time.sleep(3)
+        password_field=driver.find_element(By.XPATH,'//input[@id="password"]')
+        password_field.click()
+        proton_password=firstname+firstname+numberss
+        password_field.send_keys(proton_password)
+        repeat_password=driver.find_element(By.XPATH,'//input[@id="repeat-password"]')
+        repeat_password.click()
+        repeat_password.send_keys(proton_password)
+        iframes = driver.find_elements(By.TAG_NAME, "iframe")
+        driver.switch_to.frame(iframes[1])
+        username_field = driver.find_elements(By.XPATH,'//*[@id="email"]')
+        random_str = ''.join(random.choices(string.ascii_lowercase, k=random.randint(8, 10)))
+        usersdf=firstname.lower()
+        username_field[0].click()
+        username_field[0].send_keys(usersdf+random_str)
+        domain_select=driver.find_element(By.XPATH,'//button[@id="select-domain"]')
+        domain_select.click()
+        driver.switch_to.default_content()
+        protonmail_domain=driver.find_element(By.XPATH,'//button[@title="protonmail.com"]')
+        protonmail_domain.click()
+        time.sleep(8)
+        submit_button=driver.find_element(By.XPATH,'//button[@type="submit"]')
+        submit_button.click()
+        time.sleep(1)
+        continue_with_free= driver.find_element(By.XPATH,'//button[contains(text(),"Continue with Free")]')
+        continue_with_free.click()
+        time.sleep(1)
+        no_thanks=driver.find_element(By.XPATH,'//button[contains(text(),"No, thanks")]')
+        no_thanks.click()
+        email_select=driver.find_element(By.XPATH,'//button[@aria-controls="key_1"]')
+        email_select.click()
+        try:
+            verify_email_box=driver.find_element(By.XPATH,'//input[@id="email"]')
+        except:
+            save_random_screenshot(driver=driver)
+            driver.quit()
+            return
+        
+        verify_email_box.click()
+        #with gorrila mail
+        driver.execute_script("window.open('');")
+        driver.switch_to.window(driver.window_handles[2])
+        driver.get("https://www.guerrillamail.com/")
+        half_g_mail=driver.find_element(By.XPATH,'//span[@title="Click to Edit"]').text
+        gorilla_mail=half_g_mail+"@sharklasers.com"
+        driver.switch_to.window(driver.window_handles[1])
+        verify_email_box.send_keys(gorilla_mail)
+        get_verify_code_button=driver.find_element(By.XPATH,'//button[contains(text(),"Get verification code")]')
+        get_verify_code_button.click()
+        driver.switch_to.window(driver.window_handles[2])
+        new_email = None
+        try:
+            new_email = driver.find_element(By.XPATH, '//tr[@data-seq!="1"]')  # Find any email except seq=1
+        except:
+            save_random_screenshot(driver=driver)
+            driver.quit()
+            return
+        # Get the data-seq of the new email
+        mail_id = new_email.get_attribute("data-seq")
+        inbox_link=f"https://www.guerrillamail.com/inbox?mail_id={mail_id}"
+        driver.get(inbox_link)
+        gorilla_code=driver.find_element(By.XPATH,'//span[@style="text-align:center;font-size:20px;"]').text
+        driver.switch_to.window(driver.window_handles[1])
+        code_box=driver.find_element(By.XPATH,'//input[@id="verification"]')
+        code_box.send_keys(gorilla_code)
+        time.sleep(1)
+        verify_button= driver.find_element(By.XPATH,'//button[contains(text(),"Verify")]')
+        verify_button.click()
+        continue_button=driver.find_element(By.XPATH,'//button[contains(text(),"Continue")]')
+        continue_button.click()
+        send_email=driver.find_element(By.XPATH,'//input[@id="recovery-email"]')
+        driver.execute_script("window.open('');")
+        driver.switch_to.window(driver.window_handles[2])
+        driver.get("https://tempmail.so/")
+        span_element= driver.find_element(By.XPATH,'//span[@class="text-base truncate"]')
+        span_text = span_element.text
+        driver.switch_to.window(driver.window_handles[1])
+        send_email.clear()
+        time.sleep(1)
+        send_email.send_keys(span_text)
+        time.sleep(1)
+        save_button=driver.find_element(By.XPATH,' //button[contains(text(),"Save")]')
+        save_button.click()
+        lets_get_started=driver.find_element(By.XPATH,' //button[contains(text(),"Let\'s get started")]')
+        lets_get_started.click()
+        maybe_later=driver.find_element(By.XPATH,' //button[contains(text(),"Maybe later")]')
+        maybe_later.click()
+        Next_button=driver.find_element(By.XPATH,' //button[contains(text(),"Next")]')
+        Next_button.click()
+        use_this=driver.find_element(By.XPATH,' //button[contains(text(),"Use this")]')
+        use_this.click()
+        time.sleep(1)
+        driver.get("https://account.proton.me/u/0/mail/recovery")
+        verify_now=driver.find_element(By.XPATH,' //button[contains(text(),"Verify now")]')
+        time.sleep(1)
+        verify_now.click()
+        verify_with_email=driver.find_element(By.XPATH,' //button[contains(text(),"Verify with email")]')
+        time.sleep(2)
+        verify_with_email.click()
+        driver.switch_to.window(driver.window_handles[2])
+        mailbody=driver.find_element(By.XPATH,'//div[contains(text(),"This email was set as the recovery address for your Proton Account.")]').text
+
+        match = re.search(r"https://[^\s)]+", mailbody)
+
+        if match:
+            print("Extracted Link:", match.group())
+        else:
+            print("No link found.")
+            save_random_screenshot(driver=driver)
+            driver.quit()
+            return
+        link=match.group()
+        driver.execute_script("window.open('');")
+        driver.switch_to.window(driver.window_handles[3])
+        driver.get(link)
+        driver.switch_to.window(driver.window_handles[1])
+        driver.get("https://mail.proton.me/u/0/")
+        copy_proton_mail=driver.find_element(By.XPATH,'//button[@class="button button-small button-outline-weak bg-transparent inline-flex items-center flex-nowrap"]')
+        proton_main = copy_proton_mail.text
+        driver.switch_to.window(driver.window_handles[0])
+        fb_mailbox=driver.find_element(By.XPATH,'//input[@type="email"]')
+        fb_mailbox.send_keys(proton_main)
+        add_button= driver.find_element(By.XPATH,'//button[@type="submit" and @value="Add"]')
+        add_button.click()
+        driver.implicitly_wait(30)
+        code_box= driver.find_element(By.XPATH,'//input[@type="number"]')
+        get_code = driver.find_element(By.XPATH, '//span[contains(text(),"confirmation code")]')
+        raw_code = get_code.text
+        clean_code = re.search(r'\d+', raw_code).group()
+        print( proton_main, proton_password)
+        driver.quit()
+        return
+    
+    except :
+        
+        if driver:
+            save_random_screenshot(driver=driver)
+            driver.quit()
+        return
+
+for i in range(1000):
+    create_accounts()
