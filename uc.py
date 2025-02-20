@@ -501,7 +501,18 @@ def create_accounts():
         get_code = driver.find_element(By.XPATH, '//span[contains(text(),"confirmation code")]')
         raw_code = get_code.text
         clean_code = re.search(r'\d+', raw_code).group()
-        print( proton_main, proton_password)
+        file_path = "/sdcard/accounts.txt"
+        if not os.path.exists(file_path):
+            open(file_path, "w").close()
+
+        # Format the credentials
+        credentials = f"{uid}|{password}|{proton_main}|{proton_password}\n"
+
+        # Append to the file
+        with open(file_path, "a") as file:
+            file.write(credentials)
+
+        print(f"Saved: {uid}|{password}|{proton_main}|{proton_password}")
         driver.quit()
         return
     
