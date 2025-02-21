@@ -284,7 +284,7 @@ def create_accounts():
         print("Added --no-sandbox argument")
         options.add_argument("--disable-dev-shm-usage")
         print("Added --disable-dev-shm-usage argument")
-      #  options.add_argument("--headless=new")
+        options.add_argument("--headless=new")
         print("Added --headless=new argument")
         options.add_argument("--window-size=375,812")
         print("Set window size to mobile")
