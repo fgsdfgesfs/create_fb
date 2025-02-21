@@ -687,6 +687,7 @@ def create_accounts():
         code_box= driver.find_element(By.XPATH,'//input[@type="number"]')
         print(" Located code input")  # Added
         driver.switch_to.window(driver.window_handles[1])
+        driver.implicitly_wait(100)
         get_code = driver.find_element(By.XPATH, '//span[contains(text(),"confirmation code")]')
         raw_code = get_code.text
         clean_code = re.search(r'\d+', raw_code).group()
