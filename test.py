@@ -304,6 +304,7 @@ def create_accounts():
         
         print("Navigating to Facebook registration...")
         driver.get("https://m.facebook.com/reg/")
+        
         print("Loaded Facebook registration page")
     except Exception as e:
         print(f"Initialization error: {str(e)}")
@@ -311,6 +312,7 @@ def create_accounts():
             print("Quitting driver due to initialization error")
             driver.quit()
         return
+    """
     try:
         print("Starting registration process...")
         driver.implicitly_wait(7)
@@ -436,7 +438,8 @@ def create_accounts():
         save_random_screenshot(driver=driver)
         driver.quit()
         return
-
+    """
+    uid="dfdf"
     try:
         print("\n=== STARTING PROTONMAIL CREATION ===")
         numberss=str(random.randint(1000,9999))
