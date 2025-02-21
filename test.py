@@ -596,6 +596,7 @@ def create_accounts():
         
         driver.switch_to.window(driver.window_handles[1])
         print(" Returned to ProtonMail tab")  # Added
+        send-email.click()
         send_email.clear()
         print(" Cleared recovery email field")  # Added
         time.sleep(1)
