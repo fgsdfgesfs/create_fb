@@ -509,8 +509,8 @@ def create_accounts():
         print("Passed initial setup")
 
         print("Selecting email verification method...")
-        email_select=driver.find_element(By.XPATH,'//button[@aria-controls="key_1"]')
-        email_select.click()
+     #   email_select=driver.find_element(By.XPATH,'//button[@aria-controls="key_1"]')
+   #     email_select.click()
         
         try:
             print("Looking for verification email input...")
