@@ -596,7 +596,8 @@ def create_accounts():
         
         driver.switch_to.window(driver.window_handles[1])
         print(" Returned to ProtonMail tab")  # Added
-        send-email.click()
+        send_email=driver.find_element(By.XPATH,'//input[@id="recovery-email"]')
+        send_email.click()
         send_email.clear()
         print(" Cleared recovery email field")  # Added
         time.sleep(1)
