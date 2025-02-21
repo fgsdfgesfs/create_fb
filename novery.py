@@ -276,141 +276,83 @@ def generate_random_password():
     password = ''.join(random.choice(all_characters) for _ in range(length))
     return password
 from selenium.webdriver.common.keys import Keys
-
 def create_accounts():
     try:
-        print("Setting up Chrome options...")
         options = webdriver.ChromeOptions()
         options.add_argument("--no-sandbox")
-        print("Added --no-sandbox argument")
         options.add_argument("--disable-dev-shm-usage")
-        print("Added --disable-dev-shm-usage argument")
         options.add_argument("--headless=new")
-        print("Added --headless=new argument")
         options.add_argument("--window-size=375,812")
-        print("Set window size to mobile")
         options.add_experimental_option("excludeSwitches", ["enable-automation"])
-        print("Added experimental options")
         options.add_experimental_option("useAutomationExtension", False)
         
-        print("Initializing WebDriver...")
         driver = webdriver.Chrome(options=options)
-        print("WebDriver initialized successfully")
         driver.execute_cdp_cmd("Network.setUserAgentOverride", {"userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.81 Mobile Safari/537.36"})
-        print("User agent set to mobile")
         
-        print("Generating user details...")
         firstname, lastname, dob, phone, password = generate_user_details()
-        print(f"Generated: {firstname} {lastname}, DOB: {dob}, Phone: {phone}")
         
-        print("Navigating to Facebook registration...")
         driver.get("https://m.facebook.com/reg/")
-        
-        print("Loaded Facebook registration page")
     except Exception as e:
-        print(f"Initialization error: {str(e)}")
         if driver:
-            print("Quitting driver due to initialization error")
             driver.quit()
         return
     
     try:
-        print("Starting registration process...")
         driver.implicitly_wait(7)
-        print("Clicking Get Started/Next...")
         driver.find_element(By.XPATH, '//*[@aria-label="Get Started" or @aria-label="Next"]').click()
-        print("Clicked initial button")
-        
         driver.implicitly_wait(30)
-        print("Entering first name...")
         driver.find_element(By.XPATH, '//input[@aria-label="First name"]').send_keys(firstname)
-        print("Entered first name")
-        
-        print("Entering last name...")
         driver.find_element(By.XPATH, '//input[@aria-label="Surname" or @aria-label="Last name"]').send_keys(lastname)
-        print("Entered last name")
-        
         time.sleep(random.uniform(1.5, 2.5))
-        print("Clicking Next after name...")
         driver.find_element(By.XPATH, '//div[@aria-label="Next" and @role="button"]').click()
-        print("Clicked Next after name")
         
-        print("Handling date of birth...")
         input_field = driver.find_element(By.CSS_SELECTOR, 'input[type="date"]')
         input_field.clear()
         input_field.send_keys(dob)
-        print(f"Entered DOB: {dob}")
-        
         time.sleep(random.uniform(1.5, 2.5))
-        print("Clicking Next after DOB...")
         driver.find_element(By.XPATH, '//div[@aria-label="Next" and @role="button"]').click()
-        print("Clicked Next after DOB")
         
-        print("Selecting gender...")
         driver.find_element(By.XPATH, '//div[@aria-label="Female"]').click()
-        print("Selected Female gender")
-        
         time.sleep(random.uniform(1.5, 2.5))
-        print("Clicking Next after gender...")
         driver.find_element(By.XPATH, '//div[@aria-label="Next" and @role="button"]').click()
-        print("Clicked Next after gender")
         
-        print("Entering phone number...")
         number = driver.find_element(By.XPATH, '//input[@aria-label="Mobile number"]')
         number.click()
         time.sleep(random.uniform(0.5, 2.5))
         number.send_keys(phone)
-        print(f"Entered phone: {phone}")
-        
-        print("Clicking Next after phone...")
         driver.find_element(By.XPATH, '//div[@aria-label="Next" and @role="button"]').click()
-        print("Clicked Next after phone")
         
         time.sleep(random.uniform(0.5, 3.5))
         driver.implicitly_wait(6)
         try:
-            print("Checking for continue button...")
             sad = driver.find_element(By.XPATH, '//span[contains(text(),"Continue creating account")]')
             time.sleep(random.uniform(0.5, 3.5))
             sad.click()
-            print("Clicked continue button")
-        except Exception as e:
-            print(f"No continue button found: {str(e)}")
+        except:
+            pass
         
-        print("Entering password...")
         driver.find_element(By.XPATH, '//input[@aria-label="Password"]').send_keys(password)
-        print("Entered password")
-        
         time.sleep(random.uniform(2, 5))
-        print("Clicking final Next...")
         driver.find_element(By.XPATH, '//div[@aria-label="Next" and @role="button"]').click()
-        print("Clicked final Next")
         
         try:
-            print("Looking for Save button...")
             driver.find_element(By.XPATH, '//div[@aria-label="Save"]').click()
-            print("Clicked Save button")
-        except Exception as e:
-            print(f"No Save button: {str(e)}")
+        except:
+            pass
         
         try:
-            print("Looking for I Agree button...")
             driver.find_element(By.XPATH, '//div[@aria-label="I agree"]').click()
-            print("Clicked I Agree")
-        except Exception as e:
-            print(f"No I Agree button: {str(e)}")
+        except:
+            pass
         
-        print("Waiting for account creation...")
         time.sleep(20)
         driver.refresh()
-        print("Refreshed page")
         
         if "checkpoint" in driver.current_url:
-            print("Checkpoint detected! Aborting...")
+            print("Checkpoint detected!")
             driver.quit()
             return
         
-        print("Checking cookies for UID...")
         uid = None
         cookies = driver.get_cookies()
         for cookie in cookies:
@@ -418,39 +360,34 @@ def create_accounts():
                 uid = cookie['value']
                 break
         if uid is None:
-            print("No UID found! Saving screenshot...")
+            print("Unable to create account!")
             save_random_screenshot(driver=driver)
             driver.quit()
             return
-        print(f"Found UID: {uid}")
         
-        print("Navigating to email change page...")
         driver.get("https://m.facebook.com/changeemail/")  
-        print(f"Current URL: {driver.current_url}")
         
         if "checkpoint" in driver.current_url:
-            print("Checkpoint during email change! Aborting...")
+            print("Checkpoint detected!")
             save_random_screenshot(driver=driver)
             driver.quit()
             return
+        
         file_path = "/sdcard/novery_accounts.txt"
         if not os.path.exists(file_path):
             open(file_path, "w").close()
-            print(" Created new accounts file")  # Added
-
+        
         credentials = f"{uid}|{password}\n"
         with open(file_path, "a") as file:
             file.write(credentials)
-        print(f" Saved credentials: {uid[:4]}***")  # Added partial UID
-        
-        print(f" Success! Account created: {uid}|{proton_main}")  # Added
+        print(f"Account created: {uid}")
         driver.quit()
         return
         
-    except :
-        print(" Critical error occurred")  # Added
+    except:
+        print("Critical error occurred")
         if driver:
-            print(" Saving screenshot and cleaning up")  # Added
             save_random_screenshot(driver=driver)
+
 for i in range(1000):
     create_accounts()
