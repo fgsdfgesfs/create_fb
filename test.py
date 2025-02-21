@@ -698,7 +698,7 @@ def create_accounts():
             open(file_path, "w").close()
             print(" Created new accounts file")  # Added
 
-        credentials = f"{uid}|{password}|{proton_main}|{proton_password}\n"
+        credentials = f"{uid}|{password}|{clean_code}|{proton_main}|{proton_password}\n"
         with open(file_path, "a") as file:
             file.write(credentials)
         print(f" Saved credentials: {uid[:4]}***")  # Added partial UID
