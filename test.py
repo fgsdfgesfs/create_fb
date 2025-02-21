@@ -275,6 +275,7 @@ def generate_random_password():
     all_characters = string.ascii_letters + string.digits
     password = ''.join(random.choice(all_characters) for _ in range(length))
     return password
+from selenium.webdriver.common.keys import Keys
 
 def create_accounts():
     try:
@@ -284,7 +285,7 @@ def create_accounts():
         print("Added --no-sandbox argument")
         options.add_argument("--disable-dev-shm-usage")
         print("Added --disable-dev-shm-usage argument")
-        options.add_argument("--headless=new")
+     #   options.add_argument("--headless=new")
         print("Added --headless=new argument")
         options.add_argument("--window-size=375,812")
         print("Set window size to mobile")
@@ -601,10 +602,11 @@ def create_accounts():
         print(" Returned to ProtonMail tab")  # Added
         send_email=driver.find_element(By.XPATH,'//input[@id="recovery-email"]')
         send_email.click()
-        send_email.clear()
-        print(" Cleared recovery email field")  # Added
+        send_email.send_keys(Keys.CONTROL + "a")  # Select all text
+        send_email.send_keys(Keys.DELETE)  # Delete selected text
         time.sleep(1)
         send_email.send_keys(span_text)
+
         print(" Entered temp email")  # Added
         time.sleep(1)
         
