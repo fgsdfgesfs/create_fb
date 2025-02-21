@@ -313,7 +313,7 @@ def create_accounts():
             print("Quitting driver due to initialization error")
             driver.quit()
         return
-    """
+    
     try:
         print("Starting registration process...")
         driver.implicitly_wait(7)
@@ -439,8 +439,6 @@ def create_accounts():
         save_random_screenshot(driver=driver)
         driver.quit()
         return
-    """
-    uid="dfdf"
     try:
         print("\n=== STARTING PROTONMAIL CREATION ===")
         numberss=str(random.randint(1000,9999))
