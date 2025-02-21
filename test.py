@@ -284,7 +284,7 @@ def create_accounts():
         print("Added --no-sandbox argument")
         options.add_argument("--disable-dev-shm-usage")
         print("Added --disable-dev-shm-usage argument")
-        options.add_argument("--headless=new")
+      #  options.add_argument("--headless=new")
         print("Added --headless=new argument")
         options.add_argument("--window-size=375,812")
         print("Set window size to mobile")
@@ -311,7 +311,6 @@ def create_accounts():
             print("Quitting driver due to initialization error")
             driver.quit()
         return
-
     try:
         print("Starting registration process...")
         driver.implicitly_wait(7)
@@ -399,7 +398,7 @@ def create_accounts():
             print(f"No I Agree button: {str(e)}")
         
         print("Waiting for account creation...")
-        time.sleep(30)
+        time.sleep(20)
         driver.refresh()
         print("Refreshed page")
         
@@ -437,155 +436,275 @@ def create_accounts():
         save_random_screenshot(driver=driver)
         driver.quit()
         return
+
     try:
-            print("\n=== STARTING PROTONMAIL CREATION ===")
-            numberss=str(random.randint(1000,9999))
-            print(f"Generated random suffix: {numberss}")
+        print("\n=== STARTING PROTONMAIL CREATION ===")
+        numberss=str(random.randint(1000,9999))
+        print(f"Generated random suffix: {numberss}")
+        
+        print("Opening new tab for ProtonMail...")
+        driver.execute_script("window.open('');")
+        driver.switch_to.window(driver.window_handles[1])
+        print(f"Current window handles: {len(driver.window_handles)}")
+        
+        print("Navigating to ProtonMail signup...")
+        driver.get("https://account.proton.me/mail/signup")
+        driver.implicitly_wait(70)
+        print("Waiting for ProtonMail elements...")
+        
+        try:
+            print("Locating password field...")
+            password_field=driver.find_element(By.XPATH,'//input[@id="password"]')
+            time.sleep(3)
+            password_field=driver.find_element(By.XPATH,'//input[@id="password"]')
+            password_field.click()
+            proton_password=firstname+firstname+numberss
+            print(f"Generating Proton password: {proton_password[:3]}***")  # Partially mask password
+            password_field.send_keys(proton_password)
             
-            print("Opening new tab for ProtonMail...")
-            driver.execute_script("window.open('');")
-            driver.switch_to.window(driver.window_handles[1])
-            print(f"Current window handles: {len(driver.window_handles)}")
-            
-            print("Navigating to ProtonMail signup...")
-            driver.get("https://account.proton.me/mail/signup")
-            driver.implicitly_wait(70)
-            print("Waiting for ProtonMail elements...")
-            
-            try:
-                print("Locating password field...")
-                password_field=driver.find_element(By.XPATH,'//input[@id="password"]')
-                time.sleep(3)
-                password_field=driver.find_element(By.XPATH,'//input[@id="password"]')
-                password_field.click()
-                proton_password=firstname+firstname+numberss
-                print(f"Generating Proton password: {proton_password[:3]}***")  # Partially mask password
-                password_field.send_keys(proton_password)
-                
-                print("Filling repeat password...")
-                repeat_password=driver.find_element(By.XPATH,'//input[@id="repeat-password"]')
-                repeat_password.click()
-                repeat_password.send_keys(proton_password)
-            except Exception as e:
-                print(f"Password entry error: {str(e)}")
-                raise
+            print("Filling repeat password...")
+            repeat_password=driver.find_element(By.XPATH,'//input[@id="repeat-password"]')
+            repeat_password.click()
+            repeat_password.send_keys(proton_password)
+        except Exception as e:
+            print(f"Password entry error: {str(e)}")
+            raise
 
-            print("Handling username iframe...")
-            iframes = driver.find_elements(By.TAG_NAME, "iframe")
-            print(f"Found {len(iframes)} iframes")
-            driver.switch_to.frame(iframes[1])
-            print("Switched to username iframe")
-            
-            try:
-                username_field = driver.find_elements(By.XPATH,'//*[@id="email"]')
-                random_str = ''.join(random.choices(string.ascii_lowercase, k=random.randint(8, 10)))
-                usersdf=firstname.lower()
-                print(f"Generating username: {usersdf}{random_str}")
-                username_field[0].click()
-                username_field[0].send_keys(usersdf+random_str)
-            except Exception as e:
-                print(f"Username error: {str(e)}")
-                raise
+        print("Handling username iframe...")
+        iframes = driver.find_elements(By.TAG_NAME, "iframe")
+        print(f"Found {len(iframes)} iframes")
+        driver.switch_to.frame(iframes[1])
+        print("Switched to username iframe")
+        
+        try:
+            username_field = driver.find_elements(By.XPATH,'//*[@id="email"]')
+            random_str = ''.join(random.choices(string.ascii_lowercase, k=random.randint(8, 10)))
+            usersdf=firstname.lower()
+            print(f"Generating username: {usersdf}{random_str}")
+            username_field[0].click()
+            username_field[0].send_keys(usersdf+random_str)
+        except Exception as e:
+            print(f"Username error: {str(e)}")
+            raise
+        print("Selecting domain...")
+        domain_select=driver.find_element(By.XPATH,'//button[@id="select-domain"]')
+        domain_select.click()
+        driver.switch_to.default_content()
+        protonmail_domain=driver.find_element(By.XPATH,'//button[@title="protonmail.com"]')
+        protonmail_domain.click()
+        print("Selected protonmail.com domain")
+        
+        time.sleep(8)
+        print("Submitting form...")
+        submit_button=driver.find_element(By.XPATH,'//button[@type="submit"]')
+        submit_button.click()
+        
+        print("Handling post-submission...")
+        time.sleep(1)
+        continue_with_free= driver.find_element(By.XPATH,'//button[contains(text(),"Continue with Free")]')
+        continue_with_free.click()
+        time.sleep(1)
+        no_thanks=driver.find_element(By.XPATH,'//button[contains(text(),"No, thanks")]')
+        no_thanks.click()
+        print("Passed initial setup")
 
-            print("Selecting domain...")
-            driver.switch_to.default_content()
-            domain_select=driver.find_element(By.XPATH,'//button[@id="select-domain"]')
-            domain_select.click()
-            protonmail_domain=driver.find_element(By.XPATH,'//button[@title="protonmail.com"]')
-            protonmail_domain.click()
-            print("Selected protonmail.com domain")
-            
-            time.sleep(8)
-            print("Submitting form...")
-            submit_button=driver.find_element(By.XPATH,'//button[@type="submit"]')
-            submit_button.click()
-            
-            print("Handling post-submission...")
-            time.sleep(1)
-            continue_with_free= driver.find_element(By.XPATH,'//button[contains(text(),"Continue with Free")]')
-            continue_with_free.click()
-            time.sleep(1)
-            no_thanks=driver.find_element(By.XPATH,'//button[contains(text(),"No, thanks")]')
-            no_thanks.click()
-            print("Passed initial setup")
+        print("Selecting email verification method...")
+        email_select=driver.find_element(By.XPATH,'//button[@aria-controls="key_1"]')
+        email_select.click()
+        
+        try:
+            print("Looking for verification email input...")
+            verify_email_box=driver.find_element(By.XPATH,'//input[@id="email"]')
+        except:
+            print("Verification email input not found!")
+            save_random_screenshot(driver=driver)
+            driver.quit()
+            return
+        
+        print("Opening temporary email service...")
+        verify_email_box.click()
+        driver.execute_script("window.open('');")
+        driver.switch_to.window(driver.window_handles[2])
+        driver.get("https://www.guerrillamail.com/")
+        print("Opened GuerrillaMail in tab 2")
+        
+        try:
+            half_g_mail=driver.find_element(By.XPATH,'//span[@title="Click to Edit"]').text
+            gorilla_mail=half_g_mail+"@sharklasers.com"
+            print(f"Generated temp email: {gorilla_mail}")
+        except Exception as e:
+            print(f"Temp email error: {str(e)}")
+            raise
 
-            print("Selecting email verification method...")
-            email_select=driver.find_element(By.XPATH,'//button[@aria-controls="key_1"]')
-            email_select.click()
-            
-            try:
-                print("Looking for verification email input...")
-                verify_email_box=driver.find_element(By.XPATH,'//input[@id="email"]')
-            except:
-                print("Verification email input not found!")
-                save_random_screenshot(driver=driver)
-                driver.quit()
-                return
-            
-            print("Opening temporary email service...")
-            verify_email_box.click()
-            driver.execute_script("window.open('');")
-            driver.switch_to.window(driver.window_handles[2])
-            driver.get("https://www.guerrillamail.com/")
-            print("Opened GuerrillaMail in tab 2")
-            
-            try:
-                half_g_mail=driver.find_element(By.XPATH,'//span[@title="Click to Edit"]').text
-                gorilla_mail=half_g_mail+"@sharklasers.com"
-                print(f"Generated temp email: {gorilla_mail}")
-            except Exception as e:
-                print(f"Temp email error: {str(e)}")
-                raise
+        print("Submitting temp email to Proton...")
+        driver.switch_to.window(driver.window_handles[1])
+        verify_email_box.send_keys(gorilla_mail)
+        get_verify_code_button=driver.find_element(By.XPATH,'//button[contains(text(),"Get verification code")]')
+        get_verify_code_button.click()
+        print("Verification code requested")
 
-            print("Submitting temp email to Proton...")
-            driver.switch_to.window(driver.window_handles[1])
-            verify_email_box.send_keys(gorilla_mail)
-            get_verify_code_button=driver.find_element(By.XPATH,'//button[contains(text(),"Get verification code")]')
-            get_verify_code_button.click()
-            print("Verification code requested")
-
-            print("Checking temp mailbox...")
-            driver.switch_to.window(driver.window_handles[2])
-            try:
-                new_email = driver.find_element(By.XPATH, '//tr[@data-seq!="1"]')
-                mail_id = new_email.get_attribute("data-seq")
-                print(f"Found new email with ID: {mail_id}")
-            except:
-                print("No verification email received!")
-                save_random_screenshot(driver=driver)
-                driver.quit()
-                return
-
-            inbox_link=f"https://www.guerrillamail.com/inbox?mail_id={mail_id}"
-            print(f"Navigating to inbox: {inbox_link}")
-            driver.get(inbox_link)
-            
-            try:
-                gorilla_code=driver.find_element(By.XPATH,'//span[@style="text-align:center;font-size:20px;"]').text
-                print(f"Extracted code: {gorilla_code}")
-            except:
-                print("Failed to extract code!")
-                raise
-
-            print("Submitting verification code...")
-            driver.switch_to.window(driver.window_handles[1])
-            code_box=driver.find_element(By.XPATH,'//input[@id="verification"]')
-            code_box.send_keys(gorilla_code)
-            time.sleep(1)
-            verify_button= driver.find_element(By.XPATH,'//button[contains(text(),"Verify")]')
-            verify_button.click()
-            print("Code submitted")
-
-            # ... continue this pattern for the remaining steps ...
-
-    except Exception as e:
-            print(f"!!! CRITICAL ERROR: ")
-           
-            if driver:
-                print("Saving screenshot and cleaning up...")
-                save_random_screenshot(driver=driver)
-                driver.quit()
+        print("Checking temp mailbox...")
+        driver.switch_to.window(driver.window_handles[2])
+        try:
+            new_email = driver.find_element(By.XPATH, '//tr[@data-seq!="1"]')
+            mail_id = new_email.get_attribute("data-seq")
+            print(f"Found new email with ID: {mail_id}")
+        except:
+            print("No verification email received!")
+            save_random_screenshot(driver=driver)
+            driver.quit()
             return
 
+        inbox_link=f"https://www.guerrillamail.com/inbox?mail_id={mail_id}"
+        print(f"Navigating to inbox: {inbox_link}")
+        driver.get(inbox_link)
+        
+        try:
+            gorilla_code=driver.find_element(By.XPATH,'//span[@style="text-align:center;font-size:20px;"]').text
+            print(f"Extracted code: {gorilla_code}")
+        except:
+            print("Failed to extract code!")
+            raise
+
+        print("Submitting verification code...")
+        driver.switch_to.window(driver.window_handles[1])
+        code_box=driver.find_element(By.XPATH,'//input[@id="verification"]')
+        code_box.send_keys(gorilla_code)
+        time.sleep(1)
+        verify_button= driver.find_element(By.XPATH,'//button[contains(text(),"Verify")]')
+        verify_button.click()
+        print("Code submitted")
+
+        continue_button=driver.find_element(By.XPATH,'//button[contains(text(),"Continue")]')
+        print(" Found Continue button")  # Added
+        continue_button.click()
+        print(" Clicked Continue")  # Added
+        
+        send_email=driver.find_element(By.XPATH,'//input[@id="recovery-email"]')
+        print(" Located recovery email input")  # Added
+        
+        driver.execute_script("window.open('');")
+        print(" Opened new blank tab")  # Added
+        driver.switch_to.window(driver.window_handles[2])
+        print(f" Switched to window 2 (handles: {len(driver.window_handles)})")  # Added
+        
+        driver.get("https://tempmail.so/")
+        print(" Navigating to temp mail service")  # Added
+        span_element= driver.find_element(By.XPATH,'//span[@class="text-base truncate"]')
+        span_text = span_element.text
+        print(f" Got temp email: {span_text}")  # Added
+        
+        driver.switch_to.window(driver.window_handles[1])
+        print(" Returned to ProtonMail tab")  # Added
+        send_email.clear()
+        print(" Cleared recovery email field")  # Added
+        time.sleep(1)
+        send_email.send_keys(span_text)
+        print(" Entered temp email")  # Added
+        time.sleep(1)
+        
+        save_button=driver.find_element(By.XPATH,' //button[contains(text(),"Save")]')
+        print(" Located Save button")  # Added
+        save_button.click()
+        print(" Clicked Save")  # Added
+        
+        lets_get_started=driver.find_element(By.XPATH,' //button[contains(text(),"Let\'s get started")]')
+        lets_get_started.click()
+        print(" Clicked Let's get started")  # Added
+        
+        maybe_later=driver.find_element(By.XPATH,' //button[contains(text(),"Maybe later")]')
+        maybe_later.click()
+        print(" Clicked Maybe later")  # Added
+        
+        Next_button=driver.find_element(By.XPATH,' //button[contains(text(),"Next")]')
+        Next_button.click()
+        print(" Clicked Next")  # Added
+        
+        use_this=driver.find_element(By.XPATH,' //button[contains(text(),"Use this")]')
+        use_this.click()
+        print(" Clicked Use this")  # Added
+        time.sleep(1)
+        
+        driver.get("https://account.proton.me/u/0/mail/recovery")
+        print(" Navigating to recovery settings")  # Added
+        verify_now=driver.find_element(By.XPATH,' //button[contains(text(),"Verify now")]')
+        time.sleep(1)
+        verify_now.click()
+        print(" Clicked Verify now")  # Added
+        
+        verify_with_email=driver.find_element(By.XPATH,' //button[contains(text(),"Verify with email")]')
+        time.sleep(2)
+        verify_with_email.click()
+        print(" Initiated email verification")  # Added
+        
+        driver.switch_to.window(driver.window_handles[2])
+        print(" Switched to temp email tab")  # Added
+        mailbody=driver.find_element(By.XPATH,'//div[contains(text(),"This email was set as the recovery address for your Proton Account.")]').text
+        print(" Retrieved verification email body")  # Added
+
+        match = re.search(r"https://[^\s)]+", mailbody)
+        if match:
+            print(f" Extracted verification link: {match.group()}")  # Added
+        else:
+            print(" No verification link found")  # Added
+            save_random_screenshot(driver=driver)
+            driver.quit()
+            return
+        
+        link=match.group()
+        driver.execute_script("window.open('');")
+        print(" Opened new tab for verification")  # Added
+        driver.switch_to.window(driver.window_handles[3])
+        print(f" Switched to window 3 (handles: {len(driver.window_handles)})")  # Added
+        driver.get(link)
+        print(" Navigating to verification link")  # Added
+        
+        driver.switch_to.window(driver.window_handles[1])
+        print(" Returned to ProtonMail tab")  # Added
+        driver.get("https://mail.proton.me/u/0/")
+        print(" Opened ProtonMail inbox")  # Added
+        
+        copy_proton_mail=driver.find_element(By.XPATH,'//button[@class="button button-small button-outline-weak bg-transparent inline-flex items-center flex-nowrap"]')
+        proton_main = copy_proton_mail.text
+        print(f" Copied ProtonMail address: {proton_main}")  # Added
+        
+        driver.switch_to.window(driver.window_handles[0])
+        print(" Returned to Facebook tab")  # Added
+        fb_mailbox=driver.find_element(By.XPATH,'//input[@type="email"]')
+        fb_mailbox.send_keys(proton_main)
+        print(" Entered ProtonMail in Facebook")  # Added
+        
+        add_button= driver.find_element(By.XPATH,'//button[@type="submit" and @value="Add"]')
+        add_button.click()
+        print(" Clicked Add button")  # Added
+        
+        driver.implicitly_wait(30)
+        code_box= driver.find_element(By.XPATH,'//input[@type="number"]')
+        print(" Located code input")  # Added
+        
+        get_code = driver.find_element(By.XPATH, '//span[contains(text(),"confirmation code")]')
+        raw_code = get_code.text
+        clean_code = re.search(r'\d+', raw_code).group()
+        print(f" Extracted code: {clean_code}")  # Added
+        
+        file_path = "/sdcard/accounts.txt"
+        if not os.path.exists(file_path):
+            open(file_path, "w").close()
+            print(" Created new accounts file")  # Added
+
+        credentials = f"{uid}|{password}|{proton_main}|{proton_password}\n"
+        with open(file_path, "a") as file:
+            file.write(credentials)
+        print(f" Saved credentials: {uid[:4]}***")  # Added partial UID
+        
+        print(f" Success! Account created: {uid}|{proton_main}")  # Added
+        driver.quit()
+        return
+        
+    except :
+        print(" Critical error occurred")  # Added
+        if driver:
+            print(" Saving screenshot and cleaning up")  # Added
+            save_random_screenshot(driver=driver)
 for i in range(1000):
     create_accounts()
