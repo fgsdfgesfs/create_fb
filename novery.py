@@ -235,11 +235,8 @@ def save_random_screenshot(driver, folder="/sdcard/atlogs/"):
 
     # Full file path
     filepath = os.path.join(folder, random_filename)
-
     # Save the screenshot
     driver.save_screenshot(filepath)
-
-    print(f"Screenshot saved as: {filepath}")
     return filepath  # Return filename for reference
 
 
