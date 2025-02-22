@@ -411,7 +411,7 @@ def create_33mail(driver):
             print("Message container not found")
         print(f"{uid}|{password}|{username}")
         email=f"{username}@hadiaamir.33mail.com"
-        file_path = "/sdcard/otp.txt"
+        file_path = "33mail.txt"
         if not os.path.exists(file_path):
             open(file_path, "w").close()
 
@@ -446,9 +446,10 @@ time.sleep(4)
 driver.find_element(By.XPATH,'//button[@type="submit"]').click()
 time.sleep(6)
 driver.get("https://mail.proton.me/u/6/inbox")
-driver.find_element(By.XPATH,'//input[@id="idSelectAll"]')
-driver.implicitly_wait(7)
+
 try:
+    driver.find_element(By.XPATH,'//input[@id="idSelectAll"]')
+    driver.implicitly_wait(7)
     # Check if the message container exists
     MESSAGES = driver.find_element(By.XPATH, '//div[@class="item-container-wrapper relative"]')
     if MESSAGES:
